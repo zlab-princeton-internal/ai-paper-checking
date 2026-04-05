@@ -35,7 +35,8 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 - **Figure & Table Guide (英文)**: https://raw.githubusercontent.com/zlab-princeton-internal/figure-guide/main/README.md
 - **Figure & Table Guide (中文)**: https://raw.githubusercontent.com/zlab-princeton-internal/figure-guide/main/README_CN.md
-- **Writing Guide**: https://raw.githubusercontent.com/zlab-princeton-internal/writing-guide/main/README.md
+- **Writing Guide (英文)**: https://raw.githubusercontent.com/zlab-princeton-internal/writing-guide/main/README.md
+- **Writing Guide (中文)**: https://raw.githubusercontent.com/zlab-princeton-internal/writing-guide/main/README_CN.md
 
 下载中英文版本都读，两个版本互相补充。这些指南定义了本次检查的全部标准。
 
