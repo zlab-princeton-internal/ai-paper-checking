@@ -13,7 +13,7 @@ git clone https://github.com/zlab-princeton-internal/paper-checking-prompt.git
 Then open Claude Code in your paper's project folder and say:
 
 ```
-Read paper-checking-prompt/PROMPT_EN.md (or PROMPT.md for Chinese), then check this paper.
+Read paper-checking-prompt/PROMPT.md (or PROMPT_CN.md for Chinese), then check this paper.
 ```
 
 That's it. The agent handles everything else.
