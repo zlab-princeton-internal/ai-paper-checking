@@ -106,7 +106,7 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 1. **Web search** 验证论文存在且标题、作者、年份正确
 2. 检查 arXiv 论文是否已在会议发表——如是，给出更新建议
-3. 为每个条目提供**验证 URL**（Semantic Scholar 或 DOI）
+3. 为每个条目提供**验证 URL**（Semantic Scholar、Google Scholar 或会议官方页面）
 4. **永远不要靠 LLM 记忆判断发表状态**——必须搜索验证
 
 ---

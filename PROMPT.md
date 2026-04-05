@@ -106,7 +106,7 @@ For every bib entry:
 
 1. **Web search** to verify the paper exists with the correct title, authors, and year
 2. Check if arXiv papers have since been **published at a conference** — if so, suggest updating the entry
-3. Provide a **verification URL** (Semantic Scholar or DOI) for each entry
+3. Provide a **verification URL** (Semantic Scholar, Google Scholar, or conference proceedings page) for each entry
 4. **Never rely on LLM memory for publication status** — always search and verify
 
 ---
