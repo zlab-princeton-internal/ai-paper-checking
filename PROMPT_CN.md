@@ -66,15 +66,23 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 对所有归入 LLM 组的条目，加上 Phase 1 已查过的条目（双重检查），进行 LLM 全文审查。
 
-**每次调用只检查 5 条规则。** 分多次调用覆盖所有规则。每次调用都要读完整论文。
+### 调用方式
 
-### 读 .tex 源文件：
+使用 **`claude -p`**（headless 模式）进行每一批检查。每次调用传入：
+- 指定要检查哪 5 条规则的 prompt
+- 论文完整内容（tex 源文件或 PDF 页面）作为 context
+
+**每次 `claude -p` 调用只检查 5 条规则。** 将所有规则分成每 5 条一批，为每批启动单独的 `claude -p` 调用。可以并行运行多个调用。
+
+### 检查内容：
+
+**读 .tex 源文件**（将 tex 内容传给 `claude -p`）：
 检查所有与内容、语言、结构、引用相关的规则。
 
-### 读编译 PDF：
+**读编译 PDF**（将 PDF 页面传给 `claude -p`）：
 检查所有与视觉、排版、段落长度、图表外观相关的规则。**每一页都查，包括 appendix。**
 
-### 读原始 figure 文件：
+**读原始 figure 文件**（将原始 figure 文件传给 `claude -p`）：
 从 tex 解析 `\includegraphics{path}`，**直接读原始文件**检查。不要依赖编译 PDF 中被缩小的图。原始文件没有时才 fallback 到 PDF。
 
 ### Appendix：
@@ -84,9 +92,9 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 ## Phase 3: 逐 Section 整体评审
 
-这个阶段需要单独、专注地做一遍。**每个 section 单独一次调用** — 一次调用只审一个 section，不要把多个 section 合并到一次调用中。
+这个阶段需要单独、专注地做一遍。使用 **`claude -p`** 处理每个 section——将该 section 的 tex 内容作为 context 传入，连同要求列出 weaknesses 和 strengths 的 prompt。
 
-对正文的每个 section——包括但不限于 Abstract、Introduction、Method、Experiments、Related Work、Conclusion、以及论文自定义的其他 section——每个单独一次调用。整个 Appendix 可以合并为一次调用。
+**正文每个 section 一次 `claude -p` 调用。** 对正文的每个 section——包括但不限于 Abstract、Introduction、Method、Experiments、Related Work、Conclusion、以及论文自定义的其他 section——启动单独的 `claude -p` 调用。整个 Appendix 可以合并为一次 `claude -p` 调用。所有调用可以并行运行。
 
 对每个，分别给出：
 
@@ -143,9 +151,6 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 **颜色标记严重程度：**
 - 🔴 FAIL（必须修复）/ 🟡 WARN（应当修复）/ 🟢 PASS / 🔵 INFO
 
-**中英双语，详细程度完全相同：**
-- 中文版是英文版的完整翻译，绝不缩减任何内容
-
 **宽页面 PDF：**
 - 报告 PDF 用宽页面（Letter size 或更宽），避免频繁换行
 
@@ -160,11 +165,26 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 ### 输出文件：
 
-- `PAPER_CHECK_REPORT.md`
-- `PAPER_CHECK_REPORT.pdf`（pandoc 生成）
+**先完整写好英文报告，然后翻译成独立的中文文件。** 不要在同一个文件中混杂中英文。中文版必须详细程度完全相同——完整翻译，绝不缩减。
+
+- `PAPER_CHECK_REPORT.md` — 英文报告
+- `PAPER_CHECK_REPORT_CN.md` — 中文报告（完整翻译）
+- `PAPER_CHECK_REPORT.pdf` — 英文 PDF
+- `PAPER_CHECK_REPORT_CN.pdf` — 中文 PDF
+
+通过 pandoc 生成 PDF：
 
 ```bash
 pandoc PAPER_CHECK_REPORT.md -o PAPER_CHECK_REPORT.pdf \
+  --from markdown-raw_tex \
+  --pdf-engine=xelatex \
+  -V geometry:margin=0.7in \
+  -V geometry:paperwidth=10in \
+  -V fontsize=10pt \
+  -V "mainfont=Helvetica Neue" \
+  --toc
+
+pandoc PAPER_CHECK_REPORT_CN.md -o PAPER_CHECK_REPORT_CN.pdf \
   --from markdown-raw_tex \
   --pdf-engine=xelatex \
   -V geometry:margin=0.7in \

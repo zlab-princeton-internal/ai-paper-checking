@@ -66,15 +66,23 @@ For all items in the Python group, **write a complete Python script** that reads
 
 For all items in the LLM group, plus all items Phase 1 already checked (double-check), perform an LLM full-text review.
 
-**Each invocation checks only 5 rules.** Use multiple invocations to cover all rules. Each invocation reads the full paper.
+### How to invoke
 
-### Reading the .tex source:
+Use **`claude -p`** (headless mode) for each batch of checks. Each call gets:
+- The prompt specifying which 5 rules to check
+- The full paper content (tex source, or PDF pages) as context
+
+**Each `claude -p` call checks only 5 rules.** Split all rules into batches of 5 and launch separate `claude -p` calls for each batch. You can run multiple calls in parallel.
+
+### What to check:
+
+**Reading the .tex source** (pass tex content to `claude -p`):
 Check all rules related to content, language, structure, and citations.
 
-### Reading the compiled PDF:
+**Reading the compiled PDF** (pass PDF pages to `claude -p`):
 Check all rules related to visuals, layout, paragraph length, and figure appearance. **Check every page, including the appendix.**
 
-### Reading original figure files:
+**Reading original figure files** (pass original figure files to `claude -p`):
 Parse `\includegraphics{path}` from tex, and **read the original file** to check. Do not rely on shrunken figures in the compiled PDF. Only fall back to the PDF if the original file is unavailable.
 
 ### Appendix:
@@ -84,9 +92,9 @@ Parse `\includegraphics{path}` from tex, and **read the original file** to check
 
 ## Phase 3: Section-by-Section Holistic Review
 
-This phase deserves its own dedicated pass. **Each section gets its own separate invocation** — one section per call, do not combine multiple sections into one invocation.
+This phase deserves its own dedicated pass. Use **`claude -p`** for each section — pass the section's tex content as context, along with the prompt asking for weaknesses and strengths.
 
-For each section of the main body — including but not limited to Abstract, Introduction, Method, Experiments, Related Work, Conclusion, and any other sections the paper defines — provide a separate invocation. The entire Appendix can be reviewed in one invocation.
+**One `claude -p` call per main-body section.** For each section of the main body — including but not limited to Abstract, Introduction, Method, Experiments, Related Work, Conclusion, and any other sections the paper defines — launch a separate `claude -p` call. The entire Appendix can be reviewed in one `claude -p` call. Run all calls in parallel.
 
 For each, provide:
 
@@ -143,9 +151,6 @@ For every bib entry:
 **Color-coded severity:**
 - 🔴 FAIL (must fix) / 🟡 WARN (should fix) / 🟢 PASS / 🔵 INFO
 
-**Bilingual, equally detailed:**
-- The Chinese version is a complete translation of the English version — never shortened or abridged
-
 **Wide-page PDF:**
 - The report PDF should use a wide page (Letter size or wider) to avoid excessive line wrapping
 
@@ -160,11 +165,26 @@ For every bib entry:
 
 ### Output files:
 
-- `PAPER_CHECK_REPORT.md`
-- `PAPER_CHECK_REPORT.pdf` (generated via pandoc)
+**First write the English report completely, then translate it into a separate Chinese file.** Do not mix Chinese and English in the same file. The Chinese version must be equally detailed — a complete translation, never shortened.
+
+- `PAPER_CHECK_REPORT.md` — English report
+- `PAPER_CHECK_REPORT_CN.md` — Chinese report (complete translation)
+- `PAPER_CHECK_REPORT.pdf` — English PDF
+- `PAPER_CHECK_REPORT_CN.pdf` — Chinese PDF
+
+Generate PDFs via pandoc:
 
 ```bash
 pandoc PAPER_CHECK_REPORT.md -o PAPER_CHECK_REPORT.pdf \
+  --from markdown-raw_tex \
+  --pdf-engine=xelatex \
+  -V geometry:margin=0.7in \
+  -V geometry:paperwidth=10in \
+  -V fontsize=10pt \
+  -V "mainfont=Helvetica Neue" \
+  --toc
+
+pandoc PAPER_CHECK_REPORT_CN.md -o PAPER_CHECK_REPORT_CN.pdf \
   --from markdown-raw_tex \
   --pdf-engine=xelatex \
   -V geometry:margin=0.7in \
