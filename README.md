@@ -10,7 +10,7 @@ A prompt for checking academic ML papers with [Claude Code](https://docs.anthrop
 git clone https://github.com/zlab-princeton-internal/paper-checking-prompt.git
 ```
 
-Open Claude Code (**Opus model, max mode**) in your paper's project folder and say:
+Open Claude Code (**Opus model, max effort**) in your paper's project folder and say:
 
 ```
 Read paper-checking-prompt/PROMPT.md (or PROMPT_CN.md for Chinese), then check this paper.
@@ -18,4 +18,4 @@ Read paper-checking-prompt/PROMPT.md (or PROMPT_CN.md for Chinese), then check t
 
 That's it. Claude Code handles everything else.
 
-P.S. You can try other coding agents (Codex, Gemini CLI, etc.) and compare results, but make sure you at least run it with **Claude Code + Opus + max mode** for the best quality.
+P.S. You can try other coding agents (Codex, Gemini CLI, etc.) and compare results, but make sure you at least run it with **Claude Code + Opus + max effort** for the best quality.
