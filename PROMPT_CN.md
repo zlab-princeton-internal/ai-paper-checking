@@ -6,13 +6,34 @@
 
 ---
 
-## Phase 0: 准备
+## 行为准则（适用于所有阶段）
 
-### 0.1 找到主 tex 文件
+**全量检查，不 sample：**
+- 每条规则、每个段落、每个图、每个 bib 条目都查。
+- 列出所有 FAIL 和所有 WARN，不搞"Top 3"。
+- Grammar 检查包括每个 caption（caption 最后编辑，错最多）。
+
+**每个问题必须提供可搜索的字符串：**
+- 直接引用论文原文，让用户可以 Ctrl+F 搜到。
+- 行号可辅助但不能只给行号（行号会随编辑变化）。
+- ✅ `搜索: "substantially more than commonly assumed" — 此 claim 无 citation`
+- ✅ `搜索: "\citep{tong2024mmvp}" — 应为 \citet（用作句子主语）`
+- ✅ `Figure 7, p.13 — 搜索 caption 中 "cross-task transfer" — heatmap 数字太小`
+- ❌ `第 632 行有问题`
+- ❌ `部分图的文字太小`
+
+**立即写入中间结果：**
+- 每个阶段完成后立即将发现写入文件（`phase2_results.md`、`phase3_results.md` 等）。不要等到最后。
+
+---
+
+## Phase 1: 准备
+
+### 1.1 找到主 tex 文件
 
 找到包含 `\begin{document}` 的 `.tex` 文件（可能不叫 `main.tex`）。读取完整的 `.tex` 源文件和所有 `.bib` 文件。
 
-### 0.2 确保有编译好的 PDF
+### 1.2 确保有编译好的 PDF
 
 如果没有编译好的 PDF，自行编译：
 
@@ -27,9 +48,9 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 ---
 
-## Phase 1: 下载指南 + 制定检查计划 + 编写 Python 脚本
+## Phase 2: 下载指南 + 制定计划 + 编写 Python 脚本
 
-### 1.1 下载并通读参考指南
+### 2.1 下载并通读参考指南
 
 下载以下指南，**通读全文**，理解每一条规则：
 
@@ -40,7 +61,7 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 下载中英文版本都读，两个版本互相补充。这些指南定义了本次检查的全部标准。
 
-### 1.2 制定检查计划
+### 2.2 制定检查计划
 
 通读完指南后，列出所有需要检查的条目。对**每一条**，判断：
 
@@ -49,29 +70,25 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 
 列出完整的分类结果。
 
-### 1.3 编写 Python 检查脚本
+### 2.3 编写 Python 检查脚本
 
 对所有归入 Python 组的条目，**编写一个完整的 Python 脚本**，读取 .tex 和 .bib 文件，逐条检查并输出结果。
 
-- 不要吝啬代码量——宁可多写也不要漏查
-- 脚本可能很长（几百甚至上千行），这是正常的
-- 每个检查项输出 PASS/FAIL/WARN + 可搜索的具体位置
-- 写完后运行脚本
-- **立即将结果写入 `phase1_results.md`** — 不要等到最后才写报告
+- 不要吝啬代码量。宁可多写也不要漏查。
+- 脚本可能很长（几百甚至上千行）。这是正常的。
+- 每个检查项输出 PASS/FAIL/WARN + 可搜索的具体位置。
+- 写完后运行脚本。
+- **立即将结果写入 `phase2_results.md`。**
 
 **注意：文档在不断编辑中。每次检查都要重新读取文件，不要依赖缓存内容。**
 
 ---
 
-## Phase 2: LLM 全文检查
+## Phase 3: LLM 全文检查
 
-对所有归入 LLM 组的条目，加上 Phase 1 已查过的条目（双重检查），进行 LLM 全文审查。
+对所有归入 LLM 组的条目，加上 Phase 2 已查过的条目（双重检查），进行 LLM 全文审查。
 
-### 调用方式
-
-**重要：每次调用最多只检查 5 条规则。** 将所有规则分成每 5 条一批，为每批启动单独的调用（例如使用 subagent），**并行运行**。不要试图在一次 pass 中检查所有规则——这会导致检查不深入、不完整。
-
-### 检查内容：
+**重要：每次调用最多只检查 5 条规则。** 将所有规则分成每 5 条一批，为每批启动单独的调用（例如使用 subagent），**并行运行**。不要试图在一次 pass 中检查所有规则。
 
 ### 检查内容：
 
@@ -87,92 +104,78 @@ pdflatex -interaction=nonstopmode -shell-escape <main>.tex
 ### Appendix：
 **适用与正文完全相同的标准。** 段落可以稍短但不能全是 1-3 行短段。段落格式必须一致。不因为是 appendix 就放水。
 
-**每个调用完成后立即将结果写入 `phase2_results.md`。** 每条发现都要立刻记录完整细节，不要等到最后写报告。
+**每个调用完成后立即将结果写入 `phase3_results.md`。**
 
 ---
 
-## Phase 3: 逐 Section 整体评审
+## Phase 4: 逐 Section 整体评审
 
 这个阶段需要单独、专注地做一遍。**正文每个 section 一次调用，并行运行**（例如使用 subagent）。
 
-对正文的每个 section——包括但不限于 Abstract、Introduction、Method、Experiments、Related Work、Conclusion、以及论文自定义的其他 section——启动单独的调用。整个 Appendix 可以合并为一次调用。
+对正文的每个 section，包括但不限于 Abstract、Introduction、Method、Experiments、Related Work、Conclusion、以及论文自定义的其他 section，启动单独的调用。整个 Appendix 可以合并为一次调用。
 
 对每个，分别给出：
 
-1. **Weaknesses** — 按重要性排列，最关键的在前。要具体：引用原文短语，指明段落位置。
-2. **Strengths** — 按重要性排列。
+1. **Weaknesses** 按重要性排列，最关键的在前。要具体：引用原文短语，指明段落位置。
+2. **Strengths** 按重要性排列。
 
-从 ICML/NeurIPS reviewer 和 general audience 的角度广泛思考。列出你注意到的任何问题——不要局限于上面指南中的规则。指南是最低标准，不是上限。至少考虑：
+从 ICML/NeurIPS reviewer 和 general audience 的角度广泛思考。列出你注意到的任何问题。不要局限于上面指南中的规则。指南是最低标准，不是上限。至少考虑：
 - 论证是否有说服力？是否有逻辑漏洞？
 - 是否缺少 reviewer 会问到的内容？
 - Claim 是否有充分的实验证据支撑？
 - 写作是否清晰、组织是否合理？
 - 是否有冗余或不必要的内容？
 
-但不要局限于此——任何感觉不对、不清楚、或可以改进的地方都应该指出。
+但不要局限于此。任何感觉不对、不清楚、或可以改进的地方都应该指出。
 
 **每个 section 都要做**，包括 appendix 的各个 section。不要跳过任何一个。
-
-**每个调用完成后立即将结果写入 `phase3_results.md`。**
-
----
-
-## Phase 4: 引用验证
-
-对每个 bib 条目：
-
-1. **Web search** 验证论文存在且标题、作者、年份正确
-2. 检查 arXiv 论文是否已在会议发表——如是，给出更新建议
-3. 为每个条目提供**验证 URL**（Semantic Scholar、Google Scholar 或会议官方页面）
-4. **永远不要靠 LLM 记忆判断发表状态**——必须搜索验证
-
-**使用大量并行 agent** — 同时启动多个 agent，每个验证一部分 bib 条目。不要一条一条顺序检查。
 
 **每个调用完成后立即将结果写入 `phase4_results.md`。**
 
 ---
 
-## Phase 5: 生成报告
+## Phase 5: 引用验证
 
-**这个阶段只做合并和格式化。** 所有发现应该已经记录在 `phase1_results.md` 到 `phase4_results.md` 中。读取这些文件，合并成最终报告结构，格式化输出。不要重新检查——只编排和整理。
+对每个 bib 条目：
 
-### 行为准则（必须严格遵守）：
+1. **Web search** 验证论文存在且标题、作者、年份正确。
+2. 检查 arXiv 论文是否已在会议发表。如是，给出更新建议。
+3. 为每个条目提供**验证 URL**（Semantic Scholar、Google Scholar 或会议官方页面）。
+4. **永远不要靠 LLM 记忆判断发表状态。** 必须搜索验证。
 
-**全量检查，不 sample：**
-- 每条规则、每个段落、每个图、每个 bib 条目都查
-- 列出所有 FAIL 和所有 WARN，不搞"Top 3"
-- Grammar 检查包括每个 caption（caption 最后编辑，错最多）
+**使用大量并行 agent。** 同时启动多个 agent，每个验证一部分 bib 条目。不要一条一条顺序检查。
 
-**每个问题必须提供可搜索的字符串：**
-- 直接引用论文原文，让用户可以 Ctrl+F 搜到
-- 行号可辅助但不能只给行号（行号会随编辑变化）
-- ✅ `搜索: "substantially more than commonly assumed" — 此 claim 无 citation`
-- ✅ `搜索: "\citep{tong2024mmvp}" — 应为 \citet（用作句子主语）`
-- ✅ `Figure 7, p.13 — 搜索 caption 中 "cross-task transfer" — heatmap 数字太小`
-- ❌ `第 632 行有问题`
-- ❌ `部分图的文字太小`
+**每个调用完成后立即将结果写入 `phase5_results.md`。**
+
+---
+
+## Phase 6: 生成报告
+
+**这个阶段只做合并和格式化。** 所有发现应该已经记录在 `phase2_results.md` 到 `phase5_results.md` 中。读取这些文件，合并成最终报告结构，格式化输出。不要重新检查。
+
+### 报告格式：
 
 **Disclaimer 严肃：**
-- 报告开头明确声明：每一条结果都必须用户自行核实，自动检查存在误报和漏报
+- 报告开头明确声明：每一条结果都必须用户自行核实。自动检查存在误报和漏报。
 
 **颜色标记严重程度：**
 - 🔴 FAIL（必须修复）/ 🟡 WARN（应当修复）/ 🟢 PASS / 🔵 INFO
 
 **宽页面 PDF：**
-- 报告 PDF 用宽页面（Letter size 或更宽），避免频繁换行
+- 报告 PDF 用宽页面（Letter size 或更宽），避免频繁换行。
 
 ### 报告结构：
 
 1. **Summary** — FAIL/WARN/PASS/INFO 计数 + 列出所有 FAIL 和 WARN 项
-2. **Part A: Python 自动检查** — 按类别分组
-3. **Part B: LLM 审查** — 内容、语言、视觉、排版
-4. **Part C: 逐 Section 整体评审** — 每个 section 的 weaknesses（按重要性排）和 strengths
-5. **Part D: 引用验证** — 逐条结果及验证 URL
+2. **Phase 2 结果：Python 自动检查** — 按类别分组
+3. **Phase 3 结果：LLM 审查** — 内容、语言、视觉、排版
+4. **Phase 4 结果：逐 Section 整体评审** — 每个 section 的 weaknesses（按重要性排）和 strengths
+5. **Phase 5 结果：引用验证** — 逐条结果及验证 URL
 6. **Action Items** — Must Fix / Should Fix / Nice to Have
 
 ### 输出文件：
 
-**先完整写好英文报告，然后翻译成独立的中文文件。** 不要在同一个文件中混杂中英文。中文版必须详细程度完全相同——完整翻译，绝不缩减。
+**先完整写好英文报告，然后翻译成独立的中文文件。** 不要在同一个文件中混杂中英文。中文版必须详细程度完全相同，完整翻译，绝不缩减。
 
 - `PAPER_CHECK_REPORT.md` — 英文报告
 - `PAPER_CHECK_REPORT_CN.md` — 中文报告（完整翻译）
