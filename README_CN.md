@@ -1,6 +1,6 @@
 [English](README.md)
 
-# 论文检查 Prompt
+# AI 论文检查
 
 用 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 检查学术 ML 论文的 prompt。由 [Zhuang Liu](https://liuzhuang13.github.io/) 开发。
 
@@ -11,13 +11,13 @@
 ## 使用方法
 
 ```bash
-git clone https://github.com/zlab-princeton-internal/paper-checking-prompt.git
+git clone https://github.com/zlab-princeton-internal/ai-paper-checking.git
 ```
 
 在你论文的项目文件夹下打开 Claude Code（**Opus 模型，max effort**），说：
 
 ```
-读 paper-checking-prompt/PROMPT.md 和 paper-checking-prompt/PROMPT_CN.md，然后检查这篇论文。
+读 ai-paper-checking/PROMPT.md 和 ai-paper-checking/PROMPT_CN.md，然后检查这篇论文。
 ```
 
 就这样。剩下的全部交给 Claude Code。

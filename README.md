@@ -1,6 +1,6 @@
 [中文版](README_CN.md)
 
-# Paper Checking Prompt
+# AI Paper Checking
 
 A prompt for checking academic ML papers with [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Built by [Zhuang Liu](https://liuzhuang13.github.io/).
 
@@ -11,13 +11,13 @@ A prompt for checking academic ML papers with [Claude Code](https://docs.anthrop
 ## Usage
 
 ```bash
-git clone https://github.com/zlab-princeton-internal/paper-checking-prompt.git
+git clone https://github.com/zlab-princeton-internal/ai-paper-checking.git
 ```
 
 Open Claude Code (**Opus model, max effort**) in your paper's project folder and say:
 
 ```
-Read both paper-checking-prompt/PROMPT.md and paper-checking-prompt/PROMPT_CN.md, then check this paper.
+Read both ai-paper-checking/PROMPT.md and ai-paper-checking/PROMPT_CN.md, then check this paper.
 ```
 
 That's it. Claude Code handles everything else.
